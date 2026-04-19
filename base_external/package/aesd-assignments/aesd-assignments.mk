@@ -16,9 +16,9 @@ AESD_ASSIGNMENTS_GIT_SUBMODULES = YES
 
 define AESD_ASSIGNMENTS_BUILD_CMDS
 	$(MAKE) -C $(@D)/finder-app clean
-	$(MAKE) $(TARGET_MAKE_ENV) -C $(@D)/finder-app all
+	$(MAKE) -C $(@D)/finder-app all CC=$(TARGET_CC) CROSS_COMPILE=$(TARGET_CROSS)
 	$(MAKE) -C $(@D)/server clean
-	$(MAKE) $(TARGET_MAKE_ENV) CC=$(TARGET_CC) -C $(@D)/server all
+	$(MAKE) -C $(@D)/server all CC=$(TARGET_CC) CROSS_COMPILE=$(TARGET_CROSS)
 endef
 
 # TODO add your writer, finder and finder-test utilities/scripts to the installation steps below
@@ -33,6 +33,7 @@ define AESD_ASSIGNMENTS_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 0755 $(@D)/finder-app/finder-test.sh  $(TARGET_DIR)/usr/bin/finder-test.sh
 	$(INSTALL) -D -m 0755 $(@D)/server/aesdsocket       $(TARGET_DIR)/usr/bin/aesdsocket
 	$(INSTALL) -D -m 0755 $(@D)/server/aesdsocket-start-stop.sh $(TARGET_DIR)/etc/init.d/S99aesdsocket
+# sed -i 's|#!/bin/bash|#!/bin/sh|' $(TARGET_DIR)/etc/init.d/S99aesdsocket
 endef
 
 $(eval $(generic-package))

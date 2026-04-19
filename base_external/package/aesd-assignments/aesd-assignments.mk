@@ -6,7 +6,7 @@
 ##############################################################
 
 #TODO: Fill up the contents below in order to reference your assignment 3 git contents
-AESD_ASSIGNMENTS_VERSION = 814180598f2a199735e5fe0bc12d1c2c4282e778
+AESD_ASSIGNMENTS_VERSION = 6a911abad94b4a9f2028cd63e28de70b4556f6ba
 # Note: Be sure to reference the *ssh* repository URL here (not https) to work properly
 # with ssh keys and the automated build/test system.
 # Your site should start with git@github.com:
@@ -33,7 +33,6 @@ define AESD_ASSIGNMENTS_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 0755 $(@D)/finder-app/finder-test.sh  $(TARGET_DIR)/usr/bin/finder-test.sh
 	$(INSTALL) -D -m 0755 $(@D)/server/aesdsocket       $(TARGET_DIR)/usr/bin/aesdsocket
 	$(INSTALL) -D -m 0755 $(@D)/server/aesdsocket-start-stop.sh $(TARGET_DIR)/etc/init.d/S99aesdsocket
-# sed -i 's|#!/bin/bash|#!/bin/sh|' $(TARGET_DIR)/etc/init.d/S99aesdsocket
 endef
 
 $(eval $(generic-package))

@@ -1,0 +1,84 @@
+#!/bin/sh
+
+case "$1" in
+    start)
+        echo "Loading scull module"
+        modprobe scull
+        scull_major=$(awk "\$2==\"scull\" {print \$1}" /proc/devices)
+        if [ ! -z "${scull_major}" ]; then
+            rm -f /dev/scull[0-3]
+            mknod /dev/scull0 c $scull_major 0
+            mknod /dev/scull1 c $scull_major 1
+            mknod /dev/scull2 c $scull_major 2
+            mknod /dev/scull3 c $scull_major 3
+            ln -sf scull0 /dev/scull
+            chmod 664 /dev/scull[0-3]
+
+            rm -f /dev/scullpipe[0-3]
+            mknod /dev/scullpipe0 c $scull_major 4
+            mknod /dev/scullpipe1 c $scull_major 5
+            mknod /dev/scullpipe2 c $scull_major 6
+            mknod /dev/scullpipe3 c $scull_major 7
+            ln -sf scullpipe0 /dev/scullpipe
+            chmod 664 /dev/scullpipe[0-3]
+
+            rm -f /dev/scullsingle
+            mknod /dev/scullsingle c $scull_major 8
+            chmod 664 /dev/scullsingle
+
+            rm -f /dev/sculluid
+            mknod /dev/sculluid c $scull_major 9
+            chmod 664 /dev/sculluid
+
+            rm -f /dev/scullwuid
+            mknod /dev/scullwuid c $scull_major 10
+            chmod 664 /dev/scullwuid
+
+            rm -f /dev/scullpriv
+            mknod /dev/scullpriv c $scull_major 11
+            chmod 664 /dev/scullpriv
+        fi
+
+        echo "Loading faulty module"
+        insmod /lib/modules/$(uname -r)/extra/faulty.ko
+        faulty_major=$(awk "\$2==\"faulty\" {print \$1}" /proc/devices)
+        if [ ! -z "${faulty_major}" ]; then
+            rm -f /dev/faulty
+            mknod /dev/faulty c $faulty_major 0
+            chmod 664 /dev/faulty
+        fi
+
+        echo "Loading hello module"
+        modprobe hello
+        ;;
+
+    stop)
+        echo "Unloading hello module"
+        rmmod hello
+
+        echo "Unloading faulty module"
+        rmmod faulty
+        rm -f /dev/faulty
+
+        echo "Unloading scull module"
+        rmmod scull
+        rm -f /dev/scull /dev/scull[0-3]
+        rm -f /dev/scullpipe /dev/scullpipe[0-3]
+        rm -f /dev/scullsingle
+        rm -f /dev/sculluid
+        rm -f /dev/scullwuid
+        rm -f /dev/scullpriv
+        ;;
+
+    restart)
+        "$0" stop
+        "$0" start
+        ;;
+
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0
